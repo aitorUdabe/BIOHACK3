@@ -1,0 +1,1222 @@
+================================================================================
+SOFTWARE REQUIREMENTS SPECIFICATION (SRS) - ANTI-GRAVITY APP
+================================================================================
+Document Version: 4.0.0
+Previous Version: 3.0.0
+Target Environment: AI-Assisted Development / Vibe Coding / Codex / Cursor
+Language: Spanish
+Date: June 2026
+Product Type: Mobile App / Biohacking, Circadian Health, Adaptive Nutrition
+Primary Platforms: iOS / Android
+Recommended Framework: Flutter 3.x + Dart, with native Swift/Kotlin modules where required
+Architecture Principle: Mobile-native, Privacy-first, Edge-first, Learning-first, Offline-capable
+================================================================================
+
+0. CONTROL DE CAMBIOS DE LA VERSIÓN 4.0.0
+================================================================================
+Esta versión 4.0.0 fija la decisión técnica principal: Anti-Gravity debe ser una
+aplicación mobile nativa para iOS y Android, publicada en App Store y Google Play.
+
+Decisión de implementación:
+1. La app se desarrollará con Flutter 3.x y Dart como codebase principal.
+2. Flutter se usará para construir una app mobile real, compilada de forma nativa
+   para iOS y Android, no una web app, no PWA y no una app híbrida basada en WebView.
+3. Las integraciones que requieran acceso profundo al sistema operativo se resolverán
+   con módulos nativos específicos:
+   - iOS: Swift / SwiftUI / HealthKit / CoreLocation / BackgroundTasks / DeviceActivity
+     cuando aplique.
+   - Android: Kotlin / Health Connect / WorkManager / Foreground Services controlados /
+     Activity Recognition / UsageStatsManager cuando aplique.
+4. Se descarta React Native + Expo para el MVP porque esta app necesita permisos,
+   sensores, tareas en background, salud, uso del dispositivo y datos sensibles donde
+   Flutter + módulos nativos ofrece mayor control y estabilidad.
+5. El backend no será el núcleo de la app. El núcleo será local-first y edge-first.
+   El backend se usará únicamente para cuenta, suscripción, backup cifrado,
+   analítica anónima y servicios opcionales de IA bajo consentimiento.
+
+================================================================================
+Esta versión conserva los objetivos de producto definidos previamente:
+
+1. La app debe ser una plataforma de biohacking de vida, no solo un tracker.
+2. El núcleo diferencial debe ser el aprendizaje progresivo sobre el usuario.
+3. La app debe medir exposición solar, amanecer, luz artificial, uso del móvil,
+   comida nocturna, sueño, entrenamiento, pasos y contexto diario.
+4. La nutrición debe adaptarse al ritmo circadiano, al entrenamiento, a los pasos,
+   al gasto diario y a la respuesta individual del usuario.
+5. La app debe servir tanto a usuarios normales como a usuarios con turnos de noche.
+6. La app debe ayudar a personas que entrenan de noche, sin penalizarlas de forma
+   simplista, sino guiándolas con protocolos realistas.
+7. La app debe combinar reglas estrictas de salud circadiana con un motor adaptativo
+   que aprende tolerancias, patrones y respuestas individuales.
+8. La app debe evitar claims médicos absolutos y formular recomendaciones como
+   orientación educativa, preventiva y de bienestar.
+
+================================================================================
+1. VISIÓN DEL PRODUCTO
+================================================================================
+Anti-Gravity es una aplicación móvil de biohacking diario centrada en optimizar la
+relación entre luz, sueño, nutrición, movimiento, entrenamiento, pantallas y ritmo
+circadiano.
+
+La app no debe limitarse a registrar datos. Debe aprender del usuario y convertir
+sus hábitos diarios en recomendaciones personalizadas, accionables y progresivas.
+
+El usuario objetivo no es únicamente una persona experta en biohacking. La app debe
+funcionar para:
+
+- Personas normales que quieren dormir mejor, tener más energía y mejorar hábitos.
+- Deportistas que entrenan fuerza, CrossFit, Hyrox, running, ciclismo o fitness.
+- Personas que entrenan por la noche por falta de tiempo.
+- Trabajadores con turnos de noche o turnos rotativos.
+- Personas que quieren perder grasa o mejorar composición corporal.
+- Personas que quieren entender cómo afectan la luz, la comida, la cafeína, el móvil
+  y el sueño a su rendimiento diario.
+
+La propuesta de valor principal es:
+
+"Anti-Gravity aprende cómo responde tu cuerpo a la luz, la comida, el sueño, el
+entrenamiento y las pantallas para darte un protocolo diario personalizado que mejore
+tu energía, recuperación, nutrición y ritmo circadiano."
+
+================================================================================
+2. PRINCIPIOS DE PRODUCTO
+================================================================================
+PRINCIPIO 1: Learning-first
+--------------------------------------------------------------------------------
+La app debe aprender del usuario. No debe aplicar las mismas reglas a todos de forma
+rígida. Debe partir de estándares generales y ajustarlos según datos reales.
+
+Ejemplo:
+- Regla estándar: evitar cenar justo antes de dormir.
+- Adaptación: si el usuario entrena a las 21:30 y duerme bien con una cena ligera
+  post-entreno, la app debe permitir una estrategia adaptada en lugar de penalizarlo.
+
+PRINCIPIO 2: Reglas base + tolerancia personalizada
+--------------------------------------------------------------------------------
+El sistema debe tener reglas base estrictas, pero no dogmáticas:
+
+- Ver luz natural por la mañana es prioritario.
+- Evitar luz artificial intensa por la noche es recomendable.
+- Cenar demasiado cerca del sueño puede perjudicar la recuperación en muchos usuarios.
+- Entrenar tarde puede alterar el sueño, pero puede gestionarse con protocolos.
+- La cafeína tardía suele ser un factor de riesgo para el sueño.
+- La nutrición debe adaptarse al gasto, entrenamiento, pasos y objetivo.
+
+Estas reglas deben funcionar como punto de partida. El motor adaptativo deberá
+aprender qué reglas afectan realmente al usuario y con qué intensidad.
+
+PRINCIPIO 3: Acción diaria simple
+--------------------------------------------------------------------------------
+La app no debe saturar al usuario con datos. Cada día debe mostrar:
+
+1. Tu estado de hoy.
+2. Qué ha influido en ese estado.
+3. Las 3 acciones más importantes para mejorar hoy.
+4. Qué comer o cómo ajustar tu alimentación según horario, entrenamiento y pasos.
+
+PRINCIPIO 4: Sin wearable también debe funcionar
+--------------------------------------------------------------------------------
+La app debe ser útil aunque el usuario no tenga Oura, WHOOP, Garmin, Apple Watch ni
+pulsera. En ese caso funcionará con check-ins, uso del móvil, geolocalización opcional,
+horarios manuales, entrenamientos registrados y datos básicos.
+
+PRINCIPIO 5: No castigar, guiar
+--------------------------------------------------------------------------------
+La app debe evitar un enfoque punitivo. No debe decir "lo has hecho mal". Debe decir:
+
+- "Este hábito puede estar reduciendo tu recuperación."
+- "Probemos durante 3 días adelantar la cena 45 minutos."
+- "Tu sueño mejora cuando reduces pantalla 60 minutos antes."
+- "Como hoy entrenas tarde, ajustamos cena, luz y recuperación."
+
+================================================================================
+3. ALCANCE FUNCIONAL GENERAL
+================================================================================
+La app debe calcular, registrar o inferir los siguientes bloques:
+
+1. Exposición al sol.
+2. Confirmación de amanecer visto.
+3. Horas de luz natural directa e indirecta.
+4. Horas de luz artificial.
+5. Horas de uso del móvil.
+6. Uso del móvil en ventana nocturna.
+7. Horario de comidas.
+8. Comida nocturna o comida próxima al sueño.
+9. Macronutrientes y calorías.
+10. Pasos diarios.
+11. Entrenamiento: hora, tipo, intensidad y duración.
+12. Sueño: hora de dormir, despertar, duración y calidad.
+13. HRV, RHR, temperatura y sueño profundo si hay wearable.
+14. Cafeína y estimulantes.
+15. Alcohol opcional.
+16. Estrés subjetivo.
+17. Energía percibida.
+18. Hambre, saciedad y ansiedad alimentaria.
+19. Turnos de noche o turnos rotativos.
+20. Adaptación nutricional diaria.
+21. Protocolos para entrenamientos nocturnos.
+
+================================================================================
+4. USUARIOS OBJETIVO Y CASOS DE USO
+================================================================================
+4.1 Usuario normal con rutina diurna
+--------------------------------------------------------------------------------
+Quiere mejorar energía, sueño y hábitos. No tiene conocimientos técnicos.
+
+Casos de uso:
+- Saber si ha visto suficiente luz por la mañana.
+- Reducir uso del móvil por la noche.
+- Saber cuándo cenar.
+- Recibir 3 acciones diarias simples.
+- Entender por qué duerme peor algunos días.
+
+4.2 Usuario deportista
+--------------------------------------------------------------------------------
+Entrena fuerza, CrossFit, Hyrox, running, ciclismo o gimnasio.
+
+Casos de uso:
+- Ajustar carbohidratos según entrenamiento.
+- Ajustar calorías según pasos y gasto diario.
+- Saber si conviene entrenar fuerte o suave según recuperación.
+- Ajustar cena post-entreno si entrena tarde.
+- Detectar patrones entre entrenamiento nocturno y sueño.
+
+4.3 Usuario que entrena de noche
+--------------------------------------------------------------------------------
+No puede entrenar antes por horarios laborales/familiares.
+
+Casos de uso:
+- Recibir protocolo post-entreno nocturno.
+- Saber qué comer después sin perjudicar tanto el sueño.
+- Reducir activación, temperatura corporal y luz artificial.
+- Ajustar intensidad si se detecta mala recuperación repetida.
+
+4.4 Usuario con turno de noche
+--------------------------------------------------------------------------------
+Trabaja en sanidad, seguridad, hostelería, transporte, industria u otros sectores.
+
+Casos de uso:
+- Crear una "mañana biológica" adaptada a su hora real de despertar.
+- Gestionar exposición a luz antes, durante y después del turno.
+- Ajustar comidas para minimizar molestias digestivas y fatiga.
+- Recibir recomendaciones de sueño diurno.
+- Adaptar nutrición a horarios no convencionales.
+
+4.5 Usuario orientado a composición corporal
+--------------------------------------------------------------------------------
+Quiere perder grasa, ganar masa muscular o mantener peso.
+
+Casos de uso:
+- Ajustar calorías según pasos, entrenamiento y objetivo.
+- Distribuir macros según hora del día y entrenamiento.
+- Evitar cenas hipercalóricas que perjudiquen sueño.
+- Aprender qué comidas le dan más saciedad y energía.
+
+================================================================================
+5. ARQUITECTURA GENERAL DEL SISTEMA
+================================================================================
+5.1 Decisión de plataforma mobile
+--------------------------------------------------------------------------------
+Anti-Gravity debe ser una app mobile nativa para iOS y Android.
+
+No se aceptan como implementación principal:
+- Web app responsive.
+- PWA.
+- App basada en WebView.
+- Prototipo solo en navegador.
+- App desktop.
+
+La aplicación debe poder publicarse en:
+- Apple App Store.
+- Google Play Store.
+
+La experiencia de usuario debe diseñarse mobile-first, con navegación inferior,
+notificaciones push, permisos nativos, widgets/acciones rápidas cuando aplique y
+funcionamiento parcial offline.
+
+5.2 Stack tecnológico obligatorio para MVP
+--------------------------------------------------------------------------------
+Stack principal:
+- Framework mobile: Flutter 3.x.
+- Lenguaje principal: Dart.
+- Plataformas objetivo: iOS 16+ y Android 10+.
+- Patrón de arquitectura frontend: Clean Architecture ligera + feature modules.
+- Gestión de estado: Riverpod o Bloc. Recomendación: Riverpod por simplicidad y
+  escalabilidad en MVP.
+- Navegación: go_router.
+- Base de datos local: Drift + SQLite.
+- Cifrado local: SQLCipher o capa de cifrado equivalente para datos sensibles.
+- Almacenamiento seguro de tokens: flutter_secure_storage / Keychain iOS /
+  Android Keystore.
+- Notificaciones locales/push: flutter_local_notifications + Firebase Cloud Messaging
+  si se requiere push remota.
+- Backend mínimo: Firebase o Supabase. Recomendación inicial: Supabase si se quiere
+  PostgreSQL y control de datos; Firebase si se prioriza velocidad mobile y analítica.
+
+Decisión recomendada para este proyecto:
+- Flutter + Dart para app mobile.
+- Supabase para Auth, base de datos backend opcional, suscripciones y backup cifrado.
+- RevenueCat para gestión de suscripciones en App Store y Google Play.
+- Sentry para errores.
+- PostHog o Firebase Analytics para analítica de producto sin datos sensibles.
+
+5.3 Módulos nativos obligatorios
+--------------------------------------------------------------------------------
+Aunque la app se desarrolle en Flutter, ciertas capacidades deben implementarse o
+encapsularse mediante módulos nativos.
+
+Módulos iOS:
+- Swift para integración con HealthKit.
+- Swift para CoreLocation y cálculo/actualización de ubicación con bajo consumo.
+- Swift para BackgroundTasks.
+- Swift para DeviceActivity / Screen Time API cuando se mida uso del dispositivo,
+  siempre bajo permisos y limitaciones de Apple.
+- Swift para permisos avanzados y fallbacks cuando los paquetes Flutter no cubran
+  el caso de uso.
+
+Módulos Android:
+- Kotlin para Health Connect.
+- Kotlin para WorkManager.
+- Kotlin para sensores de luz, actividad y tareas en background.
+- Kotlin para UsageStatsManager cuando se mida tiempo de pantalla, siempre bajo
+  permiso explícito del usuario.
+- Kotlin para foreground services únicamente cuando sea estrictamente necesario y
+  cumpliendo las políticas de Google Play.
+
+5.4 Componentes principales del sistema
+--------------------------------------------------------------------------------
+1. Cliente móvil Flutter para iOS y Android.
+2. Módulos nativos Swift/Kotlin para salud, sensores, background y uso del dispositivo.
+3. Base de datos local encriptada.
+4. Motor de reglas circadianas local.
+5. Motor de aprendizaje adaptativo local.
+6. Motor nutricional adaptativo local.
+7. Capa de integraciones de salud: Apple HealthKit y Google Health Connect.
+8. Capa de integraciones externas opcionales: Oura, WHOOP, Garmin.
+9. Capa de notificaciones inteligentes.
+10. Asistente IA explicativo.
+11. Backend opcional para cuenta, backup, pagos, sincronización y servicios IA.
+
+5.5 Arquitectura recomendada para MVP
+--------------------------------------------------------------------------------
+El MVP debe construirse como app mobile real, no como prototipo web.
+
+Incluye:
+- Flutter iOS/Android.
+- Drift + SQLite local.
+- Cifrado local para datos sensibles.
+- Supabase Auth o Firebase Auth.
+- RevenueCat para suscripciones.
+- Integración inicial con Apple HealthKit y Google Health Connect.
+- Registro manual como fallback obligatorio.
+- Motor de reglas local.
+- Motor adaptativo simple basado en medias móviles, tendencias y correlaciones.
+- Notificaciones locales.
+- Backup cifrado opcional, no obligatorio para usar la app.
+
+5.6 Arquitectura para versión avanzada
+--------------------------------------------------------------------------------
+- Edge AI con TensorFlow Lite u ONNX Runtime.
+- Modelo local de predicción de impacto de hábitos.
+- Integraciones avanzadas con Oura, WHOOP, Garmin y otros wearables.
+- LLM opcional para explicaciones, siempre separando datos observados de inferencias.
+- Widgets nativos iOS/Android para protocolo diario, luz matutina y recordatorio de
+  cierre alimentario.
+- Apple Watch / Wear OS como posible fase posterior, no dentro del MVP.
+
+5.7 Principio Edge-first
+--------------------------------------------------------------------------------
+Los datos sensibles de salud deben procesarse localmente siempre que sea posible.
+Cualquier envío al backend debe requerir consentimiento explícito y cifrado.
+
+5.8 Reglas de publicación en stores
+--------------------------------------------------------------------------------
+La app debe diseñarse desde el inicio para cumplir las políticas de App Store y
+Google Play:
+- No prometer curación, diagnóstico o tratamiento médico.
+- No usar lenguaje de sustitución de profesionales sanitarios.
+- Pedir solo permisos necesarios.
+- Explicar claramente por qué se solicita cada permiso.
+- Permitir usar la app aunque el usuario rechace permisos no esenciales.
+- Incluir política de privacidad antes de publicar.
+- Incluir eliminación de cuenta y datos.
+- Gestionar suscripciones conforme a las reglas de cada store.
+
+================================================================================
+6. MODELO DE DATOS AMPLIADO
+================================================================================
+TABLA: usuarios_perfiles
+--------------------------------------------------------------------------------
+- id: UUID (PK)
+- nombre: VARCHAR(100)
+- email: VARCHAR(150), nullable
+- fecha_nacimiento: DATE, nullable
+- sexo_biologico: ENUM('masculino','femenino','otro','prefiero_no_decir'), nullable
+- altura_cm: FLOAT, nullable
+- peso_actual_kg: FLOAT, nullable
+- objetivo_principal: ENUM('energia','sueno','perdida_grasa','ganancia_muscular','rendimiento','salud_general','estres','turnos')
+- tipo_piel_fitzpatrick: INT (1 a 6), nullable
+- cronotipo_base: ENUM('matutino','vespertino','intermedio','desconocido')
+- modo_trabajo_nocturno: BOOLEAN DEFAULT FALSE
+- modo_entrenamiento_nocturno: BOOLEAN DEFAULT FALSE
+- nivel_experiencia_biohacking: ENUM('principiante','intermedio','avanzado')
+- timestamp_creacion: TIMESTAMP
+- timestamp_actualizacion: TIMESTAMP
+
+TABLA: preferencias_usuario
+--------------------------------------------------------------------------------
+- id: UUID (PK)
+- usuario_id: UUID (FK)
+- hora_objetivo_despertar: TIME, nullable
+- hora_objetivo_dormir: TIME, nullable
+- comidas_por_dia_objetivo: INT, nullable
+- dieta_preferida: ENUM('omnivora','vegetariana','vegana','pescetariana','sin_gluten','sin_lactosa','personalizada')
+- alimentos_excluidos: TEXT, nullable
+- permisos_salud_aceptados: BOOLEAN
+- permisos_ubicacion_aceptados: BOOLEAN
+- permisos_notificaciones_aceptados: BOOLEAN
+- nivel_notificaciones: ENUM('bajo','medio','alto')
+
+TABLA: rutinas_laborales
+--------------------------------------------------------------------------------
+- id: UUID (PK)
+- usuario_id: UUID (FK)
+- tipo_rutina: ENUM('diurna','nocturna','rotativa','flexible')
+- dia_semana: INT (1-7)
+- hora_inicio_trabajo: TIME
+- hora_fin_trabajo: TIME
+- exposicion_luz_natural_trabajo: ENUM('baja','media','alta','desconocida')
+- trabajo_interior: BOOLEAN
+
+TABLA: telemetria_luminal
+--------------------------------------------------------------------------------
+- id: BIGINT (PK AutoIncrement)
+- usuario_id: UUID (FK)
+- timestamp_inicio: TIMESTAMP
+- timestamp_fin: TIMESTAMP
+- tipo_luz: ENUM('solar_directa','solar_indirecta','artificial_azul','artificial_calida','artificial_roja','pantalla','desconocida')
+- lux_estimados: INT, nullable
+- uv_index: FLOAT, nullable
+- fuente_dato: ENUM('manual','sensor_movil','api_clima','wearable','screen_time','inferido')
+- confianza_estimacion: ENUM('baja','media','alta')
+- contexto: ENUM('manana','mediodia','tarde','noche','madrugada')
+
+TABLA: eventos_amanecer
+--------------------------------------------------------------------------------
+- id: UUID (PK)
+- usuario_id: UUID (FK)
+- fecha: DATE
+- hora_amanecer_local: TIME
+- visto_amanecer: BOOLEAN
+- metodo_confirmacion: ENUM('boton','ubicacion_luz','manual','inferido')
+- minutos_exposicion_primera_hora: INT
+- clima: VARCHAR(50), nullable
+- confianza: ENUM('baja','media','alta')
+
+TABLA: uso_dispositivo
+--------------------------------------------------------------------------------
+- id: BIGINT (PK AutoIncrement)
+- usuario_id: UUID (FK)
+- fecha: DATE
+- minutos_totales_movil: INT
+- minutos_movil_2h_antes_sueno: INT
+- minutos_movil_noche: INT
+- desbloqueos_totales: INT, nullable
+- ultima_interaccion_antes_sueno: TIMESTAMP, nullable
+- fuente_dato: ENUM('screen_time_ios','digital_wellbeing_android','manual','inferido')
+
+TABLA: eventos_nutricion
+--------------------------------------------------------------------------------
+- id: UUID (PK)
+- usuario_id: UUID (FK)
+- timestamp_ingesta: TIMESTAMP
+- tipo_comida: ENUM('desayuno','comida','cena','snack','pre_entreno','post_entreno','otro')
+- calorias: INT, nullable
+- proteinas_g: FLOAT, nullable
+- carbohidratos_g: FLOAT, nullable
+- grasas_g: FLOAT, nullable
+- fibra_g: FLOAT, nullable
+- foto_url_local: TEXT, nullable
+- metodo_registro: ENUM('manual','foto_ia','barcode','plantilla','importado')
+- puntuacion_saciedad: INT (1-5), nullable
+- energia_post_comida: INT (1-5), nullable
+- ansiedad_post_comida: INT (1-5), nullable
+- digestion_pesada: BOOLEAN, nullable
+- es_nocturna: BOOLEAN
+- minutos_antes_sueno: INT, nullable
+
+TABLA: planes_nutricionales_diarios
+--------------------------------------------------------------------------------
+- id: UUID (PK)
+- usuario_id: UUID (FK)
+- fecha: DATE
+- objetivo_calorias: INT
+- objetivo_proteinas_g: FLOAT
+- objetivo_carbohidratos_g: FLOAT
+- objetivo_grasas_g: FLOAT
+- objetivo_fibra_g: FLOAT
+- ventana_alimentacion_inicio: TIME, nullable
+- ventana_alimentacion_fin: TIME, nullable
+- estrategia_dia: ENUM('normal','descanso','entreno_manana','entreno_tarde','entreno_noche','turno_noche','recuperacion')
+- razonamiento_resumen: TEXT
+- confianza_plan: ENUM('baja','media','alta')
+
+TABLA: cafeina_eventos
+--------------------------------------------------------------------------------
+- id: UUID (PK)
+- usuario_id: UUID (FK)
+- timestamp_consumo: TIMESTAMP
+- fuente: ENUM('cafe','te','matcha','energetico','pre_entreno','suplemento','otro')
+- cafeina_mg_estimados: INT
+- cercania_sueno_horas: FLOAT, nullable
+- impacto_estimado: ENUM('bajo','medio','alto','desconocido')
+
+TABLA: alcohol_eventos
+--------------------------------------------------------------------------------
+- id: UUID (PK)
+- usuario_id: UUID (FK)
+- timestamp_consumo: TIMESTAMP
+- unidades_estimadas: FLOAT
+- tipo: ENUM('cerveza','vino','licor','coctel','otro')
+- notas: TEXT, nullable
+
+TABLA: telemetria_biometrica_diaria
+--------------------------------------------------------------------------------
+- id: BIGINT (PK AutoIncrement)
+- usuario_id: UUID (FK)
+- fecha: DATE
+- hrv_promedio: FLOAT, nullable
+- rhr_promedio: INT, nullable
+- eficiencia_sueno: FLOAT, nullable
+- sueno_total_segundos: INT, nullable
+- sueno_profundo_segundos: INT, nullable
+- sueno_rem_segundos: INT, nullable
+- latencia_sueno_min: INT, nullable
+- despertares: INT, nullable
+- temperatura_basal_desviacion: FLOAT, nullable
+- pasos_totales: INT, nullable
+- neat_estimado_kcal: INT, nullable
+- energia_subjetiva_manana: INT (1-5), nullable
+- estres_subjetivo: INT (1-5), nullable
+- fatiga_muscular: INT (1-5), nullable
+- fuente_dato: ENUM('manual','apple_health','health_connect','oura','whoop','garmin','mixto')
+
+TABLA: entrenamientos
+--------------------------------------------------------------------------------
+- id: UUID (PK)
+- usuario_id: UUID (FK)
+- timestamp_inicio: TIMESTAMP
+- timestamp_fin: TIMESTAMP
+- intensidad: ENUM('baja','moderada','alta','competicion')
+- tipo_ejercicio: ENUM('fuerza','crossfit','hyrox','running','ciclismo','natacion','movilidad','otro')
+- energia_quemada_kcal: INT, nullable
+- rpe: INT (1-10), nullable
+- es_nocturno: BOOLEAN
+- requiere_protocolo_nocturno: BOOLEAN
+
+TABLA: scores_diarios
+--------------------------------------------------------------------------------
+- id: UUID (PK)
+- usuario_id: UUID (FK)
+- fecha: DATE
+- circadian_score: INT (0-100)
+- recovery_score: INT (0-100)
+- nutrition_alignment_score: INT (0-100)
+- light_score: INT (0-100)
+- sleep_score: INT (0-100)
+- screen_score: INT (0-100)
+- confidence_score: ENUM('baja','media','alta')
+- resumen: TEXT
+
+TABLA: recomendaciones_diarias
+--------------------------------------------------------------------------------
+- id: UUID (PK)
+- usuario_id: UUID (FK)
+- fecha: DATE
+- prioridad: INT (1-3)
+- categoria: ENUM('luz','sueno','nutricion','entrenamiento','pantallas','cafeina','estres','turnos')
+- titulo: VARCHAR(150)
+- descripcion: TEXT
+- razon: TEXT
+- estado: ENUM('pendiente','completada','omitida','no_aplica')
+- impacto_estimado: ENUM('bajo','medio','alto')
+
+TABLA: aprendizaje_usuario
+--------------------------------------------------------------------------------
+- id: UUID (PK)
+- usuario_id: UUID (FK)
+- variable: VARCHAR(100)
+- patron_detectado: TEXT
+- evidencia_dias: INT
+- impacto_estimado: ENUM('positivo','negativo','neutro','inconcluso')
+- confianza: ENUM('baja','media','alta')
+- fecha_ultima_actualizacion: DATE
+
+================================================================================
+7. MOTOR DE APRENDIZAJE ADAPTATIVO
+================================================================================
+7.1 Objetivo del motor
+--------------------------------------------------------------------------------
+El motor de aprendizaje debe identificar cómo responde cada usuario a sus hábitos.
+No debe asumir que todos reaccionan igual.
+
+Debe aprender relaciones como:
+
+- Si ver amanecer mejora energía o sueño.
+- Si más luz natural por la mañana mejora el descanso.
+- Si el móvil antes de dormir empeora el sueño.
+- Si cenar tarde afecta la HRV o el sueño profundo.
+- Si entrenar tarde perjudica o no al usuario.
+- Si una cena post-entreno ligera funciona mejor que una pesada.
+- Si la cafeína después de cierta hora afecta al sueño.
+- Si más pasos requieren más carbohidratos para mantener energía.
+- Si el usuario rinde mejor con más carbohidrato antes o después del entreno.
+
+7.2 Fase de calibración
+--------------------------------------------------------------------------------
+REQ-ML-001: Durante los primeros 14 días, el sistema no deberá emitir conclusiones
+fuertes. Solo recogerá datos y mostrará recomendaciones generales.
+
+REQ-ML-002: Durante la calibración, el sistema construirá líneas base de:
+- Hora media de dormir.
+- Hora media de despertar.
+- Duración de sueño.
+- Calidad subjetiva de sueño.
+- HRV si existe.
+- RHR si existe.
+- Pasos medios.
+- Horarios habituales de comida.
+- Horarios habituales de entrenamiento.
+- Uso medio de móvil.
+- Exposición media a luz matutina.
+
+REQ-ML-003: Toda conclusión en fase de calibración deberá mostrarse como "hipótesis
+inicial".
+
+7.3 Reglas adaptativas
+--------------------------------------------------------------------------------
+REQ-ML-004: El sistema deberá comparar cada hábito con las métricas del día siguiente.
+
+Ejemplo:
+- Hábito: cena a menos de 90 minutos de dormir.
+- Métricas posteriores: sueño, energía, HRV, despertares, digestión percibida.
+- Resultado: impacto negativo, neutro o inconcluso.
+
+REQ-ML-005: El sistema deberá exigir al menos 5 eventos comparables antes de mostrar
+una conclusión personalizada.
+
+REQ-ML-006: El sistema deberá asignar un nivel de confianza a cada patrón:
+- Baja: menos de 5 eventos o datos incompletos.
+- Media: 5-14 eventos con tendencia clara.
+- Alta: 15+ eventos con tendencia consistente.
+
+REQ-ML-007: Si un patrón se contradice durante 7 días consecutivos, deberá rebajarse
+la confianza de la recomendación.
+
+7.4 Motor de tolerancia personalizada
+--------------------------------------------------------------------------------
+REQ-ML-008: El sistema deberá adaptar penalizaciones según la respuesta individual.
+
+Ejemplo:
+- Regla base: móvil en la última hora antes de dormir resta score.
+- Adaptación: si el usuario reduce brillo, usa modo nocturno y no se observa impacto,
+  la penalización puede reducirse, pero la recomendación general se mantiene.
+
+REQ-ML-009: Ninguna adaptación podrá eliminar por completo las reglas base de seguridad
+circadiana. Solo podrá modular la severidad.
+
+REQ-ML-010: El usuario podrá ver "por qué" la app ha aprendido una regla personalizada.
+
+================================================================================
+8. MOTOR DE BIOHACKING CIRCUDIANO
+================================================================================
+8.1 Variables centrales
+--------------------------------------------------------------------------------
+El sistema debe monitorizar:
+
+- Amanecer visto: sí/no.
+- Minutos de luz natural en la primera hora tras despertar.
+- Minutos de luz natural total.
+- Minutos de luz artificial nocturna.
+- Minutos de móvil antes de dormir.
+- Hora de primera comida.
+- Hora de última comida.
+- Ventana total de alimentación.
+- Hora de entrenamiento.
+- Pasos diarios.
+- Sueño y recuperación.
+
+8.2 Reglas base de luz
+--------------------------------------------------------------------------------
+REQ-LUZ-001: El sistema calculará hora de amanecer, atardecer y mediodía solar según
+ubicación aproximada del usuario.
+
+REQ-LUZ-002: La app deberá recomendar exposición a luz natural dentro de los primeros
+60 minutos tras despertar.
+
+REQ-LUZ-003: La app deberá permitir confirmar manualmente "he visto el amanecer".
+
+REQ-LUZ-004: Si no hay ubicación, el usuario podrá configurar ciudad o zona horaria
+manualmente.
+
+REQ-LUZ-005: Si el usuario no puede ver el amanecer, la app deberá proponer alternativa:
+"salir a luz natural lo antes posible".
+
+8.3 Reglas base de luz artificial y móvil
+--------------------------------------------------------------------------------
+REQ-SCR-001: El sistema deberá calcular minutos de móvil durante el día y en las 2
+horas previas al sueño.
+
+REQ-SCR-002: El sistema deberá identificar uso nocturno de móvil según la hora objetivo
+de sueño o sueño real.
+
+REQ-SCR-003: Si hay uso elevado de móvil antes de dormir, la app deberá recomendar:
+- Reducir brillo.
+- Activar modo noche.
+- Usar luz cálida.
+- Adelantar la última interacción.
+- Cambiar a rutina sin pantalla.
+
+REQ-SCR-004: La app no deberá bloquear el móvil ni forzar acciones. Solo recomendará,
+recordará y mostrará impacto personalizado.
+
+================================================================================
+9. CIRCUDIAN SCORE
+================================================================================
+9.1 Definición
+--------------------------------------------------------------------------------
+El Circadian Score es un índice de 0 a 100 que mide la alineación del día del usuario
+con sus ritmos circadianos y hábitos de recuperación.
+
+9.2 Fórmula base
+--------------------------------------------------------------------------------
+CS = (0.25 * S_luz) + (0.20 * S_sueno) + (0.20 * S_nutricion) +
+     (0.15 * S_pantallas) + (0.10 * S_movimiento) + (0.10 * S_consistencia)
+     - Penalizaciones_Moduladas
+
+9.3 Subscores
+--------------------------------------------------------------------------------
+S_luz:
+- Amanecer o luz natural temprana.
+- Minutos de luz natural en la mañana.
+- Exposición exterior total.
+
+S_sueno:
+- Duración.
+- Regularidad.
+- Calidad subjetiva.
+- HRV/RHR si existe.
+
+S_nutricion:
+- Última comida respecto al sueño.
+- Ventana alimentaria.
+- Calidad macro estimada.
+- Adecuación al entrenamiento y pasos.
+
+S_pantallas:
+- Uso total.
+- Uso nocturno.
+- Última interacción antes del sueño.
+
+S_movimiento:
+- Pasos.
+- Entrenamiento.
+- NEAT.
+
+S_consistencia:
+- Regularidad de sueño.
+- Regularidad de comidas.
+- Cumplimiento de hábitos mínimos.
+
+9.4 Penalizaciones moduladas
+--------------------------------------------------------------------------------
+Las penalizaciones deberán existir, pero deben ser adaptativas.
+
+Ejemplos:
+- Comida muy cercana al sueño.
+- Luz artificial intensa por la noche.
+- Cafeína tardía.
+- Entrenamiento de alta intensidad muy tarde sin protocolo de recuperación.
+- Uso elevado de móvil en la última hora antes de dormir.
+
+La severidad debe depender de:
+- Regla base.
+- Datos históricos del usuario.
+- Impacto observado.
+- Nivel de confianza del sistema.
+
+================================================================================
+10. RECOVERY READINESS SCORE
+================================================================================
+REQ-REC-001: La app calculará un Recovery Readiness Score de 0 a 100.
+
+Variables:
+- Sueño total.
+- Calidad subjetiva.
+- HRV si disponible.
+- RHR si disponible.
+- Temperatura si disponible.
+- Fatiga muscular.
+- Estrés subjetivo.
+- Entrenamiento del día anterior.
+- Pasos del día anterior.
+
+REQ-REC-002: El score deberá recomendar tipo de día:
+- Día verde: entrenar normal.
+- Día amarillo: moderar intensidad.
+- Día rojo: priorizar recuperación, movilidad, paseo o descanso.
+
+REQ-REC-003: El score no debe diagnosticar enfermedades ni sustituir atención médica.
+
+================================================================================
+11. MOTOR DE NUTRICIÓN CIRCADIANA ADAPTATIVA
+================================================================================
+11.1 Objetivo
+--------------------------------------------------------------------------------
+El motor nutricional debe adaptar calorías, macros y timing alimentario según:
+
+- Objetivo del usuario.
+- Peso, altura y perfil.
+- Pasos diarios.
+- Entrenamiento previsto o realizado.
+- Hora del entrenamiento.
+- Sueño y recuperación.
+- Hambre, saciedad, energía y ansiedad.
+- Cronotipo.
+- Turno laboral.
+- Tolerancia individual.
+
+11.2 Estándares nutricionales base
+--------------------------------------------------------------------------------
+REQ-NUT-001: El sistema deberá respetar estándares generales:
+- Proteína suficiente según objetivo y masa corporal.
+- Fibra mínima diaria.
+- Grasas esenciales suficientes.
+- Carbohidratos ajustados a actividad y rendimiento.
+- Déficit o superávit calórico moderado según objetivo.
+
+REQ-NUT-002: La app no deberá generar dietas extremas, restrictivas o peligrosas.
+
+REQ-NUT-003: La app deberá advertir que sus recomendaciones son educativas y no
+sustituyen a un dietista-nutricionista o médico.
+
+11.3 Distribución circadiana
+--------------------------------------------------------------------------------
+REQ-NUT-004: La app deberá favorecer, por defecto, mayor carga calórica y de
+carbohidratos durante las horas de mayor actividad y luz.
+
+REQ-NUT-005: La app deberá recomendar evitar cenas excesivamente pesadas si están
+muy próximas al sueño.
+
+REQ-NUT-006: Si el usuario entrena por la noche, la app deberá adaptar la cena
+post-entreno en lugar de eliminarla.
+
+11.4 Nutrición según pasos
+--------------------------------------------------------------------------------
+REQ-NUT-007: El sistema deberá ajustar calorías y carbohidratos según pasos diarios.
+
+Ejemplo:
+- Día con pocos pasos y sin entreno: menor carga de carbohidratos.
+- Día con muchos pasos y entreno intenso: mayor carga de carbohidratos.
+- Día de baja recuperación: mantener proteína y micronutrición, moderar estrés digestivo.
+
+11.5 Nutrición según entrenamiento
+--------------------------------------------------------------------------------
+REQ-NUT-008: Si el entrenamiento es por la mañana, priorizar desayuno/pre-entreno y
+recuperación post-entreno.
+
+REQ-NUT-009: Si el entrenamiento es por la tarde, distribuir carbohidratos entre
+comida y post-entreno.
+
+REQ-NUT-010: Si el entrenamiento es nocturno, generar protocolo específico:
+- Proteína fácil de digerir.
+- Carbohidrato moderado si el entrenamiento fue intenso.
+- Grasa baja/moderada para facilitar digestión.
+- Evitar comidas excesivamente voluminosas.
+- Reducir luz artificial y pantalla posterior.
+- Rutina de enfriamiento y relajación.
+
+11.6 Aprendizaje nutricional
+--------------------------------------------------------------------------------
+REQ-NUT-011: La app deberá aprender qué comidas generan más saciedad.
+
+REQ-NUT-012: La app deberá aprender qué distribución de carbohidratos mejora energía
+y entrenamiento.
+
+REQ-NUT-013: La app deberá detectar patrones de hambre nocturna, ansiedad o bajones
+de energía.
+
+REQ-NUT-014: El usuario podrá valorar cada comida con check-ins rápidos:
+- Saciedad.
+- Energía.
+- Digestión.
+- Ansiedad.
+- Rendimiento posterior.
+
+================================================================================
+12. MÓDULO PARA PERSONAS QUE ENTRENAN DE NOCHE
+================================================================================
+REQ-TRN-001: La app detectará entrenamiento nocturno si ocurre:
+- Después de las 20:00, o
+- Dentro de las 3 horas previas al sueño objetivo, o
+- En una franja que históricamente afecta al sueño del usuario.
+
+REQ-TRN-002: La app no deberá limitarse a decir "no entrenes de noche".
+
+REQ-TRN-003: La app deberá explicar:
+- Entrenar tarde puede aumentar activación, temperatura corporal y retrasar sueño en
+  algunos usuarios.
+- Si no hay otra opción, se puede reducir el impacto con protocolo adecuado.
+
+REQ-TRN-004: Protocolo post-entreno nocturno:
+1. Reducir luz intensa tras entrenar.
+2. Cena post-entreno ligera y fácil de digerir.
+3. Hidratación adecuada.
+4. Ducha templada o estrategia de enfriamiento individualizada.
+5. Respiración o relajación 5-10 minutos.
+6. Evitar cafeína/pre-entreno estimulante por la tarde-noche.
+7. Registrar sueño y energía al día siguiente.
+
+REQ-TRN-005: Si tras varios entrenamientos nocturnos el sueño empeora, la app deberá
+proponer:
+- Bajar intensidad nocturna.
+- Mover fuerza intensa a otro día/hora.
+- Cambiar a técnica, movilidad o zona 2 por la noche.
+- Ajustar cena y luz.
+
+================================================================================
+13. MÓDULO PARA TURNOS DE NOCHE Y TURNOS ROTATIVOS
+================================================================================
+13.1 Objetivo
+--------------------------------------------------------------------------------
+La app debe permitir que personas con turnos de noche se beneficien del sistema sin
+recibir recomendaciones imposibles diseñadas para usuarios con horario diurno.
+
+13.2 Modo turno de noche
+--------------------------------------------------------------------------------
+REQ-SHF-001: El usuario podrá activar modo turno de noche manualmente.
+
+REQ-SHF-002: La app podrá sugerir activación automática si detecta sueño invertido
+durante 3 días consecutivos.
+
+REQ-SHF-003: El sistema definirá una "mañana biológica" basada en la hora real de
+despertar del usuario, no en el amanecer solar convencional.
+
+REQ-SHF-004: La app recomendará exposición a luz intensa al inicio del periodo activo
+del usuario.
+
+REQ-SHF-005: La app recomendará reducir luz intensa al terminar el turno para facilitar
+el sueño diurno.
+
+13.3 Nutrición en turnos
+--------------------------------------------------------------------------------
+REQ-SHF-006: La app deberá adaptar comidas a turnos nocturnos.
+
+REQ-SHF-007: La app deberá evitar recomendaciones absolutas como "prohibido comer".
+
+REQ-SHF-008: La app podrá recomendar:
+- Comidas principales antes del turno.
+- Snacks ligeros durante la madrugada si son necesarios.
+- Evitar comidas muy grasas o muy pesadas en plena madrugada.
+- Desayuno ligero post-turno si facilita sueño.
+- Hidratación y electrolitos según necesidad.
+
+REQ-SHF-009: La app deberá aprender cómo responde cada trabajador a distintos horarios
+de comida durante el turno.
+
+================================================================================
+14. MÓDULO DE CAFEÍNA, ESTIMULANTES Y PRE-ENTRENOS
+================================================================================
+REQ-CAF-001: El usuario podrá registrar cafeína manualmente o mediante plantillas.
+
+REQ-CAF-002: La app estimará una hora límite de cafeína según hora objetivo de sueño.
+
+REQ-CAF-003: La app deberá adaptar la recomendación según respuesta individual.
+
+REQ-CAF-004: Si el usuario usa pre-entreno por la noche, la app deberá sugerir
+alternativas sin estimulantes.
+
+REQ-CAF-005: La app deberá mostrar correlaciones como:
+- Cafeína después de X hora vs latencia de sueño.
+- Cafeína tarde vs despertares.
+- Cafeína tarde vs energía al día siguiente.
+
+================================================================================
+15. MÓDULO DE ESTRÉS, RESPIRACIÓN Y RECUPERACIÓN
+================================================================================
+REQ-STR-001: El usuario podrá registrar estrés subjetivo de 1 a 5.
+
+REQ-STR-002: La app deberá ofrecer protocolos breves:
+- Respiración nasal.
+- Respiración 4-6.
+- NSDR o relajación guiada.
+- Paseo suave.
+- Movilidad.
+
+REQ-STR-003: Si el usuario tiene baja recuperación, la app deberá priorizar acciones
+de bajo coste antes que recomendaciones complejas.
+
+================================================================================
+16. MÓDULO DE ENTORNO TÉRMICO
+================================================================================
+REQ-TMP-001: La app podrá registrar temperatura aproximada del dormitorio.
+
+REQ-TMP-002: La app podrá recomendar estrategias de enfriamiento nocturno.
+
+REQ-TMP-003: Para entrenamientos nocturnos, la app deberá sugerir reducir temperatura,
+ducha templada/fría según tolerancia y transición a entorno de baja luz.
+
+REQ-TMP-004: La app deberá aprender si las estrategias térmicas mejoran o empeoran el
+sueño del usuario.
+
+================================================================================
+17. PLAN DIARIO ADAPTATIVO
+================================================================================
+REQ-DAY-001: Cada mañana la app generará un plan diario con máximo 3 prioridades.
+
+Ejemplo:
+1. Sal 15 minutos a luz natural antes de las 09:15.
+2. Hoy entrenas tarde: cena ligera post-entreno y reduce pantalla después.
+3. Ayer tu sueño fue bajo: evita cafeína después de las 14:00.
+
+REQ-DAY-002: Cada recomendación deberá incluir:
+- Acción concreta.
+- Motivo.
+- Nivel de impacto.
+- Dificultad.
+- Alternativa si no puede cumplirla.
+
+REQ-DAY-003: Si el usuario ignora una recomendación repetidamente, la app deberá hacerla
+más fácil o cambiar estrategia.
+
+================================================================================
+18. IA CONVERSACIONAL
+================================================================================
+REQ-AI-001: La app incluirá un asistente IA que pueda responder preguntas como:
+- ¿Por qué he dormido mal?
+- ¿Qué puedo cenar si entreno a las 22:00?
+- ¿Qué hago si trabajo de noche?
+- ¿Cuánta luz me falta hoy?
+- ¿Qué hábito está afectando más a mi energía?
+
+REQ-AI-002: El asistente deberá separar:
+- Datos observados.
+- Supuestos.
+- Recomendaciones.
+
+REQ-AI-003: El asistente no diagnosticará enfermedades.
+
+REQ-AI-004: El asistente no prescribirá tratamientos ni suplementos como obligación.
+
+REQ-AI-005: Las respuestas deberán estar basadas en los datos del usuario cuando existan.
+Si no hay datos suficientes, deberá decirlo claramente.
+
+================================================================================
+19. NOTIFICACIONES INTELIGENTES
+================================================================================
+REQ-NOT-001: Notificación de luz matutina.
+REQ-NOT-002: Notificación de cafeína límite.
+REQ-NOT-003: Notificación de cena recomendada.
+REQ-NOT-004: Notificación de reducción de luz/pantalla.
+REQ-NOT-005: Notificación post-entreno nocturno.
+REQ-NOT-006: Notificación para trabajadores de noche al salir del turno.
+REQ-NOT-007: Las notificaciones deberán ser configurables.
+REQ-NOT-008: La app deberá evitar exceso de notificaciones.
+
+================================================================================
+20. PRIVACIDAD, SEGURIDAD Y CUMPLIMIENTO
+================================================================================
+REQ-PRI-001: Consentimiento explícito por categoría de dato.
+REQ-PRI-002: Posibilidad de usar la app sin ubicación precisa.
+REQ-PRI-003: Posibilidad de usar la app sin wearable.
+REQ-PRI-004: Borrado total de datos.
+REQ-PRI-005: Exportación de datos en CSV/JSON.
+REQ-PRI-006: Cifrado local.
+REQ-PRI-007: Cifrado en tránsito si hay backend.
+REQ-PRI-008: No vender datos.
+REQ-PRI-009: No compartir datos de salud sin consentimiento.
+REQ-PRI-010: Política de privacidad clara.
+
+================================================================================
+21. PANTALLAS PRINCIPALES
+================================================================================
+1. Onboarding.
+2. Home diaria.
+3. Circadian Score.
+4. Recovery Score.
+5. Plan diario.
+6. Registro rápido.
+7. Nutrición diaria.
+8. Entrenamiento.
+9. Luz y pantallas.
+10. Sueño.
+11. Insights aprendidos.
+12. Modo turnos.
+13. Asistente IA.
+14. Ajustes y privacidad.
+
+================================================================================
+22. MVP RECOMENDADO
+================================================================================
+El MVP debe incluir:
+
+1. Onboarding completo.
+2. Modo manual.
+3. Apple Health / Health Connect básico.
+4. Registro de amanecer visto.
+5. Registro de luz natural.
+6. Registro de uso de móvil manual o importado si es posible.
+7. Registro de comidas.
+8. Registro de entrenamiento.
+9. Registro de pasos.
+10. Circadian Score simple.
+11. Recovery Score simple.
+12. Plan diario con 3 acciones.
+13. Nutrición adaptativa básica.
+14. Modo entrenamiento nocturno.
+15. Modo turno de noche básico.
+16. Aprendizaje inicial basado en reglas y medias móviles.
+17. Privacidad y exportación/borrado de datos.
+
+No incluir en MVP:
+- ML complejo.
+- Todas las integraciones wearable.
+- Recomendaciones clínicas avanzadas.
+- Marketplace de suplementos.
+- Comunidad social.
+
+================================================================================
+23. VERSIÓN PRO
+================================================================================
+La versión Pro podrá incluir:
+
+1. Integración con Oura, WHOOP, Garmin.
+2. IA conversacional avanzada.
+3. Protocolos personalizados por objetivo.
+4. Nutrición avanzada con foto IA.
+5. Correlaciones avanzadas.
+6. Informes semanales.
+7. Modo deportista avanzado.
+8. Modo turnos rotativos avanzado.
+9. Predicción de sueño y recuperación.
+10. Exportación avanzada para nutricionista/coach.
+
+================================================================================
+24. MÉTRICAS DE ÉXITO
+================================================================================
+Métricas de producto:
+- Retención D1, D7, D30.
+- Número de check-ins diarios.
+- Porcentaje de usuarios que completan 3 acciones diarias.
+- Activación de permisos de salud.
+- Usuarios que completan calibración de 14 días.
+
+Métricas de valor:
+- Mejora subjetiva de energía.
+- Mejora subjetiva de sueño.
+- Reducción de móvil nocturno.
+- Aumento de luz matutina.
+- Mayor regularidad de comidas.
+- Mejor adherencia nutricional.
+
+Métricas de aprendizaje:
+- Patrones detectados por usuario.
+- Recomendaciones aceptadas.
+- Recomendaciones ignoradas.
+- Confianza media de patrones.
+
+================================================================================
+25. CRITERIOS DE ACEPTACIÓN
+================================================================================
+1. El usuario puede completar onboarding en menos de 6 minutos.
+2. La app puede funcionar sin wearable.
+3. La app genera un plan diario con 3 acciones.
+4. El usuario puede registrar amanecer visto en un toque.
+5. El usuario puede registrar comida en menos de 20 segundos en modo rápido.
+6. El usuario puede activar modo turno de noche.
+7. El usuario puede marcar que entrena de noche.
+8. La app adapta nutrición según pasos y entrenamiento.
+9. La app muestra cuándo no tiene datos suficientes.
+10. La app permite borrar y exportar datos.
+11. La app no usa lenguaje médico absoluto.
+12. La app explica por qué recomienda algo.
+
+================================================================================
+26. RIESGOS Y EDGE CASES
+================================================================================
+Riesgo 1: Pseudociencia percibida.
+Mitigación: lenguaje prudente, explicación clara, separación entre datos e hipótesis.
+
+Riesgo 2: Exceso de complejidad.
+Mitigación: home diaria con solo 3 acciones prioritarias.
+
+Riesgo 3: Dependencia de wearables.
+Mitigación: modo manual completo.
+
+Riesgo 4: Usuarios con horarios imposibles.
+Mitigación: modo turnos y alternativas realistas.
+
+Riesgo 5: Nutrición demasiado rígida.
+Mitigación: estándares nutricionales + adaptación personalizada.
+
+Riesgo 6: Privacidad de datos sensibles.
+Mitigación: edge-first, cifrado, consentimiento granular y borrado/exportación.
+
+Riesgo 7: Recomendaciones erróneas de IA.
+Mitigación: asistente con límites, disclaimers y trazabilidad.
+
+================================================================================
+27. PROMPT BASE PARA CODEX / CURSOR
+================================================================================
+Actúa como un equipo senior de desarrollo mobile especializado en Flutter, arquitectura
+clean, apps de salud, privacidad y datos locales. Vas a construir la app Anti-Gravity
+siguiendo este SRS.
+
+Objetivo:
+Crear una app móvil iOS/Android de biohacking circadiano y nutrición adaptativa que
+aprenda del usuario y genere un plan diario basado en luz, sueño, nutrición, pasos,
+entrenamiento, móvil, turnos y recuperación.
+
+Prioridad:
+Construir primero el MVP, no la versión completa.
+
+Stack recomendado:
+- Flutter.
+- Arquitectura Clean Architecture.
+- Estado con Riverpod o Bloc.
+- Base local SQLite/Drift con cifrado.
+- Integración futura con HealthKit y Health Connect.
+- Servicios desacoplados: CircadianScoreService, NutritionEngineService,
+  AdaptiveLearningService, DailyPlanService, PrivacyService.
+
+Reglas:
+- No inventar endpoints externos.
+- No crear recomendaciones médicas absolutas.
+- Toda recomendación debe tener explicación.
+- La app debe funcionar sin wearable.
+- La app debe permitir borrar/exportar datos.
+- Empezar con reglas adaptativas simples antes de ML complejo.
+
+Primera tarea:
+Genera la estructura de carpetas, modelos de datos principales, entidades de dominio,
+servicios core y pantallas base para el MVP.
+
+================================================================================
+FIN DEL DOCUMENTO
+================================================================================
+
+
+================================================================================
+ANEXO V4 - REQUISITOS MOBILE NATIVOS AÑADIDOS
+================================================================================
+
+REQ-NF-MOB-001: La app debe compilar y ejecutarse como aplicación nativa en iOS y Android.
+REQ-NF-MOB-002: La app no debe depender de una WebView para su funcionalidad principal.
+REQ-NF-MOB-003: La app debe funcionar parcialmente offline, permitiendo registrar sueño, comidas,
+                luz, entrenamiento, pasos manuales, energía y check-ins sin conexión.
+REQ-NF-MOB-004: La app debe sincronizar datos pendientes cuando vuelva la conexión, si el usuario
+                ha activado backup o cuenta cloud.
+REQ-NF-MOB-005: La app debe tener fallback manual si HealthKit, Health Connect o permisos de uso
+                del dispositivo no están disponibles.
+REQ-NF-MOB-006: El diseño debe respetar safe areas, navegación por gestos, tamaños de pantalla,
+                modo oscuro y accesibilidad básica en iOS y Android.
